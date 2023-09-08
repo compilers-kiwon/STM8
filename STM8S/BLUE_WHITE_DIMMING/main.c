@@ -75,11 +75,11 @@ enum {
 #define BRIGHTNESS_DELAY        0x180
 
 /* Private variables ---------------------------------------------------------*/
-static uint16_t duty,offset;
+static uint16_t white_duty,blue_duty,white_offset,blue_offset;
 
 /* Private function prototypes -----------------------------------------------*/
 void Delay (uint16_t nCount);
-void run_dimming_mode(uint8_t state);
+void run_dimming_mode(uint16_t* duty,uint16_t* offset,uint8_t state);
 uint8_t update_state(uint8_t cur_state);
 
 /* Private functions ---------------------------------------------------------*/
@@ -96,20 +96,20 @@ uint8_t update_state(uint8_t cur_state)
       //GPIO_WriteLow(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
       break;
     case  BLUE_LED_ON:
-      SET_BLUE_LED(LED_ON);
+      SET_BLUE_LED(blue_duty);
       SET_WHITE_LED(LED_OFF);
       //GPIO_WriteHigh(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
       //GPIO_WriteLow(LED_GPIO_PORT, WHITE_LED_GPIO_PIN);
-      duty = LED_ON;
-      offset = GET_DARK;
+      //duty = LED_ON;
+      //offset = GET_DARK;
       break;
     case  WHITE_LED_ON:
       SET_BLUE_LED(LED_OFF);
-      SET_WHITE_LED(LED_ON);
+      SET_WHITE_LED(white_duty);
       //GPIO_WriteLow(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
       //GPIO_WriteHigh(LED_GPIO_PORT, WHITE_LED_GPIO_PIN);
-      duty = LED_ON;
-      offset = GET_DARK;
+      //duty = LED_ON;
+      //offset = GET_DARK;
       break;
     default:
       // do nothing
@@ -119,34 +119,34 @@ uint8_t update_state(uint8_t cur_state)
   return new_state;
 }
 
-void run_dimming_mode(uint8_t state)
+void run_dimming_mode(uint16_t* duty,uint16_t* offset,uint8_t state)
 {
   for(;READ_SWITCH()==SWITCH_ON;)
   {
-    if (offset == GET_DARK)
+    if ((*offset) == GET_DARK)
     {
-      for(;READ_SWITCH()==SWITCH_ON&&duty>MIN_DUTY;duty-=BRIGHTNESS_STEP)
+      for(;READ_SWITCH()==SWITCH_ON&&(*duty)>MIN_DUTY;*duty-=BRIGHTNESS_STEP)
       {
-        (state==BLUE_LED_ON)?SET_BLUE_LED(duty):SET_WHITE_LED(duty);
+        (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);
         Delay(BRIGHTNESS_DELAY);
       }
       
-      if (duty == MIN_DUTY)
+      if ((*duty) == MIN_DUTY)
       {
-        offset = GET_BRIGHT;
+        *offset = GET_BRIGHT;
       }
     }
     else
     {
-      for(;READ_SWITCH()==SWITCH_ON&&duty<MAX_DUTY;duty+=BRIGHTNESS_STEP)
+      for(;READ_SWITCH()==SWITCH_ON&&(*duty)<MAX_DUTY;*duty+=BRIGHTNESS_STEP)
       {
-        (state==BLUE_LED_ON)?SET_BLUE_LED(duty):SET_WHITE_LED(duty);      
+        (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);      
         Delay(BRIGHTNESS_DELAY);
       }
       
-      if (duty == MAX_DUTY)
+      if ((*duty) == MAX_DUTY)
       {
-        offset = GET_DARK;
+        *offset = GET_DARK;
       }
     }
   }
@@ -158,6 +158,7 @@ void run_dimming_mode(uint8_t state)
   * @param  None
   * @retval None
   */
+
 void main(void)
 {
   uint32_t      cnt = 0;
@@ -172,7 +173,7 @@ void main(void)
   GPIO_DeInit(SWITCH_GPIO_PORT);
   GPIO_Init(SWITCH_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
   
-  /* Initialize Timer */
+/* Initialize Timer */
   TIM2_DeInit();
   TIM2_TimeBaseInit(TIM2_PRESCALER_32, MAX_DUTY);
   TIM2_OC1Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, MIN_DUTY, TIM2_OCPOLARITY_HIGH);
@@ -183,13 +184,21 @@ void main(void)
   SET_BLUE_LED(LED_OFF);
   SET_WHITE_LED(LED_OFF);
   
+  white_duty = blue_duty = MAX_DUTY;
+  white_offset = blue_offset = GET_DARK;
+  
   while (1)
-  {    
+  {
     if (READ_SWITCH() == SWITCH_ON)
     {
       if(++cnt>=DIMMING_CNT && cur_state!=ALL_LED_OFF)
       {
-        run_dimming_mode(cur_state);
+        if (cur_state == BLUE_LED_ON) {
+          run_dimming_mode(&blue_duty,&blue_offset,cur_state);
+        } else {
+          run_dimming_mode(&white_duty,&white_offset,cur_state);
+        }
+        
         cnt = 0;
       }
     }
@@ -198,8 +207,9 @@ void main(void)
       if (cnt >= TIME_OF_SWITCH)
       {
         cur_state = update_state(cur_state);
-        cnt = 0;
       }
+
+      cnt = 0;
     }
   }
 }
