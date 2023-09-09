@@ -27,7 +27,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm8s.h"
-
+#include "main.h"
+    
 /**
   * @addtogroup GPIO_Toggle
   * @{
@@ -43,37 +44,7 @@ enum {
 
 /* Private define ------------------------------------------------------------*/
 /* Evalboard I/Os configuration */
-
-#define SWITCH_GPIO_PORT        (GPIOC)
-#define SWITCH_GPIO_PIN         (GPIO_PIN_5)
-
-#define LED_GPIO_PORT           (GPIOD)
-#define WHITE_LED_GPIO_PIN      (GPIO_PIN_3)
-#define BLUE_LED_GPIO_PIN       (GPIO_PIN_4)
-
 /* Private macro -------------------------------------------------------------*/
-#define SWITCH_ON       RESET
-#define SWITCH_OFF      SET
-
-#define READ_SWITCH()   (GPIO_ReadInputPin(SWITCH_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN))
-
-#define TIME_OF_SWITCH  500
-#define DIMMING_CNT     (TIME_OF_SWITCH*50)
-#define MAX_DUTY        1000
-#define MIN_DUTY        0
-
-#define SET_BLUE_LED(brightness)        (TIM2_SetCompare1((brightness)))
-#define SET_WHITE_LED(brightness)       (TIM2_SetCompare2((brightness)))
-
-#define LED_OFF MIN_DUTY
-#define LED_ON  MAX_DUTY
-
-#define GET_BRIGHT      0
-#define GET_DARK        1
-
-#define BRIGHTNESS_STEP         2
-#define BRIGHTNESS_DELAY        0x180
-
 /* Private variables ---------------------------------------------------------*/
 static uint16_t white_duty,blue_duty,white_offset,blue_offset;
 
@@ -165,20 +136,28 @@ void main(void)
   uint8_t       cur_state = ALL_LED_OFF;
   
   /* Initialize I/Os in Output Mode */
-  // Active High
   GPIO_DeInit(LED_GPIO_PORT);
   GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)WHITE_LED_GPIO_PIN, GPIO_MODE_OUT_PP_LOW_FAST);
   GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)BLUE_LED_GPIO_PIN, GPIO_MODE_OUT_PP_LOW_FAST);
-  // Active Low
-  GPIO_DeInit(SWITCH_GPIO_PORT);
-  GPIO_Init(SWITCH_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
+  GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)RED_LED_GPIO_PIN, GPIO_MODE_OUT_PP_HIGH_FAST);
   
-/* Initialize Timer */
+  GPIO_DeInit(SWITCH_CHG_GPIO_PORT);
+  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
+  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
+  
+  /* Initialize Timer */
+  // BLUE & WHITE LED Control
   TIM2_DeInit();
   TIM2_TimeBaseInit(TIM2_PRESCALER_32, MAX_DUTY);
   TIM2_OC1Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, MIN_DUTY, TIM2_OCPOLARITY_HIGH);
   TIM2_OC2Init(TIM2_OCMODE_PWM1, TIM2_OUTPUTSTATE_ENABLE, MIN_DUTY, TIM2_OCPOLARITY_HIGH);
-    
+  // CHARGING Control
+  TIM1_DeInit();
+  TIM1_TimeBaseInit(PRESCALER_OF_CHG_MONITOR_TIMER, TIM1_COUNTERMODE_UP, PEROID_OF_CHG_MONITOR_TIMER, 0);
+  TIM1_SelectOnePulseMode(TIM1_OPMODE_REPETITIVE);                    
+  TIM1_ITConfig(TIM1_IT_UPDATE, ENABLE);
+  enableInterrupts();
+  
   /* Start Timer as LED off state */
   TIM2_Cmd(ENABLE);
   SET_BLUE_LED(LED_OFF);
@@ -186,6 +165,9 @@ void main(void)
   
   white_duty = blue_duty = MAX_DUTY;
   white_offset = blue_offset = GET_DARK;
+  
+  /* Start Timer to monitor carging state */
+  TIM1_Cmd(ENABLE);
   
   while (1)
   {

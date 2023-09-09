@@ -2320,6 +2320,9 @@
         <group>
             <name>inc</name>
             <file>
+                <name>$PROJ_DIR$\main.h</name>
+            </file>
+            <file>
                 <name>$PROJ_DIR$\stm8s_conf.h</name>
             </file>
             <file>
