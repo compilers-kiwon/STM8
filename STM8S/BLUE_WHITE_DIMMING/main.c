@@ -63,24 +63,14 @@ uint8_t update_state(uint8_t cur_state)
     case  ALL_LED_OFF:
       SET_BLUE_LED(LED_OFF);
       SET_WHITE_LED(LED_OFF);
-      //GPIO_WriteLow(LED_GPIO_PORT, WHITE_LED_GPIO_PIN);
-      //GPIO_WriteLow(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
       break;
     case  BLUE_LED_ON:
       SET_BLUE_LED(blue_duty);
       SET_WHITE_LED(LED_OFF);
-      //GPIO_WriteHigh(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
-      //GPIO_WriteLow(LED_GPIO_PORT, WHITE_LED_GPIO_PIN);
-      //duty = LED_ON;
-      //offset = GET_DARK;
       break;
     case  WHITE_LED_ON:
       SET_BLUE_LED(LED_OFF);
       SET_WHITE_LED(white_duty);
-      //GPIO_WriteLow(LED_GPIO_PORT, BLUE_LED_GPIO_PIN);
-      //GPIO_WriteHigh(LED_GPIO_PORT, WHITE_LED_GPIO_PIN);
-      //duty = LED_ON;
-      //offset = GET_DARK;
       break;
     default:
       // do nothing
@@ -142,8 +132,12 @@ void main(void)
   GPIO_Init(LED_GPIO_PORT, (GPIO_Pin_TypeDef)RED_LED_GPIO_PIN, GPIO_MODE_OUT_PP_HIGH_FAST);
   
   GPIO_DeInit(SWITCH_CHG_GPIO_PORT);
-  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
-  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
+  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_IT);
+  GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
+  
+  /* Initialize the Interrupt sensitivity */
+  EXTI_DeInit();
+  EXTI_SetExtIntSensitivity(EXTI_SWITCH_GPIO_PORT, EXTI_SENSITIVITY_FALL_ONLY);
   
   /* Initialize Timer */
   // BLUE & WHITE LED Control
@@ -190,7 +184,12 @@ void main(void)
       {
         cur_state = update_state(cur_state);
       }
-
+      
+      if (cur_state == ALL_LED_OFF)
+      {
+        halt();
+      }
+      
       cnt = 0;
     }
   }

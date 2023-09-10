@@ -1,6 +1,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
+#define EXTI_SWITCH_GPIO_PORT   (EXTI_PORT_GPIOC)
+
 #define SWITCH_CHG_GPIO_PORT    (GPIOC)
 #define SWITCH_GPIO_PIN         (GPIO_PIN_5)
 #define CHG_GPIO_PIN            (GPIO_PIN_4)

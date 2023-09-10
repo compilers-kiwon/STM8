@@ -23,9 +23,9 @@
 
 if ($debugfile -eq "")
 {
-& "C:\STM8\IAR\Embedded Workbench 8.3_2\common\bin\cspybat" -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --backend -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --backend -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
 }
 else
 {
-& "C:\STM8\IAR\Embedded Workbench 8.3_2\common\bin\cspybat" -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
+& "C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --debug_file=$debugfile --backend -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
 }
