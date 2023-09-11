@@ -135,9 +135,13 @@ void main(void)
   GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN, GPIO_MODE_IN_PU_IT);
   GPIO_Init(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_GPIO_PIN, GPIO_MODE_IN_PU_NO_IT);
   
+  GPIO_DeInit(CHG_DETECT_GPIO_PORT);
+  GPIO_Init(CHG_DETECT_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_DETECT_GPIO_PIN, GPIO_MODE_IN_FL_IT);
+  
   /* Initialize the Interrupt sensitivity */
   EXTI_DeInit();
   EXTI_SetExtIntSensitivity(EXTI_SWITCH_GPIO_PORT, EXTI_SENSITIVITY_FALL_ONLY);
+  EXTI_SetExtIntSensitivity(EXTI_CHG_DETECT_GPIO_PORT, EXTI_SENSITIVITY_RISE_ONLY);
   
   /* Initialize Timer */
   // BLUE & WHITE LED Control
@@ -185,7 +189,7 @@ void main(void)
         cur_state = update_state(cur_state);
       }
       
-      if (cur_state == ALL_LED_OFF)
+      if (cur_state==ALL_LED_OFF && READ_CHG_DETECT()==CHG_DISCONNECTED)
       {
         halt();
       }

@@ -25,7 +25,7 @@ if not "%~1" == "" goto debugFile
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --backend -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
+"C:\STM8\IAR\Embedded Workbench 8.3_2\common\bin\cspybat" -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" --backend -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
 
 @echo off 
 goto end 
@@ -34,7 +34,7 @@ goto end
 
 @echo on 
 
-"C:\Program Files (x86)\IAR Systems\Embedded Workbench 8.3\common\bin\cspybat" -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\Work\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
+"C:\STM8\IAR\Embedded Workbench 8.3_2\common\bin\cspybat" -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.general.xcl" "--debug_file=%~1" --backend -f "C:\Study\STM8\STM8S\BLUE_WHITE_DIMMING\settings\BLUE_WHITE_DIMMING.Debug.driver.xcl" 
 
 @echo off 
 :end

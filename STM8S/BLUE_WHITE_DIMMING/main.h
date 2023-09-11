@@ -1,7 +1,8 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-#define EXTI_SWITCH_GPIO_PORT   (EXTI_PORT_GPIOC)
+#define EXTI_SWITCH_GPIO_PORT           (EXTI_PORT_GPIOC)
+#define EXTI_CHG_DETECT_GPIO_PORT       (EXTI_PORT_GPIOB)
 
 #define SWITCH_CHG_GPIO_PORT    (GPIOC)
 #define SWITCH_GPIO_PIN         (GPIO_PIN_5)
@@ -12,14 +13,21 @@
 #define BLUE_LED_GPIO_PIN       (GPIO_PIN_4)
 #define RED_LED_GPIO_PIN        (GPIO_PIN_2)
 
+#define CHG_DETECT_GPIO_PORT    (GPIOB)
+#define CHG_DETECT_GPIO_PIN     (GPIO_PIN_5)
+
 #define SWITCH_ON       RESET
 #define SWITCH_OFF      SET
 
 #define CHARGING        RESET
 #define FULL            SET
 
-#define READ_SWITCH()   (GPIO_ReadInputPin(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN))
-#define READ_CHG_STAT() (GPIO_ReadInputPin(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_GPIO_PIN))
+#define CHG_CONNECTED           SET
+#define CHG_DISCONNECTED        RESET
+
+#define READ_SWITCH()           (GPIO_ReadInputPin(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)SWITCH_GPIO_PIN))
+#define READ_CHG_STAT()         (GPIO_ReadInputPin(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_GPIO_PIN))
+#define READ_CHG_DETECT()       (GPIO_ReadInputPin(CHG_DETECT_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_DETECT_GPIO_PIN))
 
 #define TIME_OF_SWITCH  500
 #define DIMMING_CNT     (TIME_OF_SWITCH*50)
