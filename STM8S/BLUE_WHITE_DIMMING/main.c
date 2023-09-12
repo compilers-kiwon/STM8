@@ -189,9 +189,13 @@ void main(void)
         cur_state = update_state(cur_state);
       }
       
-      if (cur_state==ALL_LED_OFF && READ_CHG_DETECT()==CHG_DISCONNECTED)
+      if (cur_state == ALL_LED_OFF) 
       {
-        halt();
+        if (READ_CHG_DETECT() == CHG_DISCONNECTED)
+        {
+          CHG_LED_OFF();
+          halt();
+        }
       }
       
       cnt = 0;

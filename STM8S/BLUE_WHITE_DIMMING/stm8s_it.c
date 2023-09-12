@@ -235,12 +235,16 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
   
     if (chg == CHARGING)
     {
-      GPIO_WriteReverse(LED_GPIO_PORT, RED_LED_GPIO_PIN);
+      CHG_LED_BLINK();
     }
     else
     {
-      GPIO_WriteHigh(LED_GPIO_PORT, RED_LED_GPIO_PIN);
+      CHG_LED_ON();
     }
+  }
+  else
+  {
+    CHG_LED_OFF();
   }
   
   TIM1_ClearITPendingBit(TIM1_IT_UPDATE);

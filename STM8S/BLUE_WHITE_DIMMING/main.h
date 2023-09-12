@@ -34,6 +34,10 @@
 #define MAX_DUTY        1000
 #define MIN_DUTY        0
 
+#define CHG_LED_OFF()   (GPIO_WriteLow(LED_GPIO_PORT, RED_LED_GPIO_PIN))
+#define CHG_LED_ON()    (GPIO_WriteHigh(LED_GPIO_PORT, RED_LED_GPIO_PIN))
+#define CHG_LED_BLINK() (GPIO_WriteReverse(LED_GPIO_PORT, RED_LED_GPIO_PIN))
+
 #define SET_BLUE_LED(brightness)        (TIM2_SetCompare1((brightness)))
 #define SET_WHITE_LED(brightness)       (TIM2_SetCompare2((brightness)))
 
