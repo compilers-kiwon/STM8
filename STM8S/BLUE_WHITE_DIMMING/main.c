@@ -82,35 +82,30 @@ uint8_t update_state(uint8_t cur_state)
 
 void run_dimming_mode(uint16_t* duty,uint16_t* offset,uint8_t state)
 {
-  for(;READ_SWITCH()==SWITCH_ON;)
+  if ((*offset) == GET_DARK)
   {
-    if ((*offset) == GET_DARK)
+    *duty -= BRIGHTNESS_STEP;
     {
-      for(;READ_SWITCH()==SWITCH_ON&&(*duty)>MIN_DUTY;*duty-=BRIGHTNESS_STEP)
-      {
-        (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);
-        Delay(BRIGHTNESS_DELAY);
-      }
-      
-      if ((*duty) == MIN_DUTY)
-      {
-        *offset = GET_BRIGHT;
-      }
+      (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);
     }
-    else
+    
+    if ((*duty) == MIN_DUTY)
     {
-      for(;READ_SWITCH()==SWITCH_ON&&(*duty)<MAX_DUTY;*duty+=BRIGHTNESS_STEP)
-      {
-        (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);      
-        Delay(BRIGHTNESS_DELAY);
-      }
-      
-      if ((*duty) == MAX_DUTY)
-      {
-        *offset = GET_DARK;
-      }
+      *offset = GET_BRIGHT;
     }
   }
+  else
+  {
+    *duty += BRIGHTNESS_STEP;
+    {
+      (state==BLUE_LED_ON)?SET_BLUE_LED(*duty):SET_WHITE_LED(*duty);      
+    }
+    
+    if ((*duty) == MAX_DUTY)
+    {
+      *offset = GET_DARK;
+    }
+  } 
 }
 /* Public functions ----------------------------------------------------------*/
 
@@ -171,22 +166,22 @@ void main(void)
   {
     if (READ_SWITCH() == SWITCH_ON)
     {
-      if(++cnt>=DIMMING_CNT && cur_state!=ALL_LED_OFF)
+      if (++cnt >= TIME_OF_SWITCH)
       {
-        if (cur_state == BLUE_LED_ON) {
-          run_dimming_mode(&blue_duty,&blue_offset,cur_state);
-        } else {
-          run_dimming_mode(&white_duty,&white_offset,cur_state);
-        }
-        
+        cur_state = update_state(cur_state);
+        while (READ_SWITCH() == SWITCH_ON);
         cnt = 0;
       }
     }
     else
     {
-      if (cnt >= TIME_OF_SWITCH)
+      if (cnt >= DIMMING_CNT)
       {
-        cur_state = update_state(cur_state);
+        switch (cur_state) {
+          case BLUE_LED_ON:run_dimming_mode(&blue_duty,&blue_offset,cur_state);break;
+          case WHITE_LED_ON:run_dimming_mode(&white_duty,&white_offset,cur_state);break;
+          default:break;
+        }
       }
       
       if (cur_state == ALL_LED_OFF) 

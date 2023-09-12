@@ -29,10 +29,10 @@
 #define READ_CHG_STAT()         (GPIO_ReadInputPin(SWITCH_CHG_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_GPIO_PIN))
 #define READ_CHG_DETECT()       (GPIO_ReadInputPin(CHG_DETECT_GPIO_PORT, (GPIO_Pin_TypeDef)CHG_DETECT_GPIO_PIN))
 
-#define TIME_OF_SWITCH  500
-#define DIMMING_CNT     (TIME_OF_SWITCH*50)
-#define MAX_DUTY        1000
-#define MIN_DUTY        0
+#define DIMMING_CNT     (100)
+#define TIME_OF_SWITCH  (32500)
+#define MAX_DUTY        (1000)
+#define MIN_DUTY        (20)
 
 #define CHG_LED_OFF()   (GPIO_WriteLow(LED_GPIO_PORT, RED_LED_GPIO_PIN))
 #define CHG_LED_ON()    (GPIO_WriteHigh(LED_GPIO_PORT, RED_LED_GPIO_PIN))
@@ -41,13 +41,13 @@
 #define SET_BLUE_LED(brightness)        (TIM2_SetCompare1((brightness)))
 #define SET_WHITE_LED(brightness)       (TIM2_SetCompare2((brightness)))
 
-#define LED_OFF MIN_DUTY
+#define LED_OFF 0
 #define LED_ON  MAX_DUTY
 
 #define GET_BRIGHT      0
 #define GET_DARK        1
 
-#define BRIGHTNESS_STEP         2
+#define BRIGHTNESS_STEP         (140)
 #define BRIGHTNESS_DELAY        0x180
 
 #define PRESCALER_OF_CHG_MONITOR_TIMER  50
