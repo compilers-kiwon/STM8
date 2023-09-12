@@ -229,7 +229,7 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
-  if (READ_CHG_DETECT() == CHG_CONNECTED)
+  if (READ_CHG_DETECT() != CHG_DISCONNECTED)
   {
     BitStatus chg = READ_CHG_STAT();
   
