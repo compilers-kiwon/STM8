@@ -229,15 +229,18 @@ INTERRUPT_HANDLER(TIM1_UPD_OVF_TRG_BRK_IRQHandler, 11)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
-  BitStatus chg = READ_CHG_STAT();
+  if (READ_CHG_DETECT() == CHG_CONNECTED)
+  {
+    BitStatus chg = READ_CHG_STAT();
   
-  if (chg == CHARGING)
-  {
-    GPIO_WriteReverse(LED_GPIO_PORT, RED_LED_GPIO_PIN);
-  }
-  else
-  {
-    GPIO_WriteLow(LED_GPIO_PORT, RED_LED_GPIO_PIN);
+    if (chg == CHARGING)
+    {
+      GPIO_WriteReverse(LED_GPIO_PORT, RED_LED_GPIO_PIN);
+    }
+    else
+    {
+      GPIO_WriteHigh(LED_GPIO_PORT, RED_LED_GPIO_PIN);
+    }
   }
   
   TIM1_ClearITPendingBit(TIM1_IT_UPDATE);
